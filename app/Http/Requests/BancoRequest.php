@@ -26,6 +26,7 @@ class BancoRequest extends FormRequest
 			'tipo_cuenta' => 'required',
 			'numero_cuenta' => 'required|string',
 			'moneda' => 'required',
+            'cuenta_banco' => 'required|string|size:4',
         ];
     }
 }

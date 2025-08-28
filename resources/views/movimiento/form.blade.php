@@ -1,3 +1,9 @@
+
+@php
+    $opcionesMovimiento = [
+        'movimiento uno' => 'Movimiento uno',
+    ]
+@endphp
 <div class="grid grid-cols-2 gap-6">
     <div>
         <x-input-label for="tipo_movimiento" :value="__('Tipo Movimiento')" />
@@ -44,7 +50,14 @@
     </div>
     <div>
         <x-input-label for="motivo" :value="__('Motivo')"/>
-        <x-text-input id="motivo" name="motivo" type="text" class="mt-1 block w-full" :value="old('motivo', $movimiento?->motivo)" autocomplete="motivo" placeholder="Motivo"/>
+        <select id="motivo" name="motivo" class="mt-1 block w-full rounded border-gray-300" autocomplete="motivo">
+            <option value="">Seleccione un motivo</option>
+            @foreach ($opcionesMovimiento as $motivo => $nombre)
+                <option value="{{ $motivo }}" {{ old('motivo', $movimiento?->motivo) == $motivo ? 'selected' : '' }}>
+                    {{ $nombre }}
+                </option>
+            @endforeach
+        </select>
         <x-input-error class="mt-2" :messages="$errors->get('motivo')"/>
     </div>
 
@@ -85,7 +98,6 @@
                 habilitarCampo(bancoEmisor);
                 habilitarCampo(bancoReceptor);
             } else {
-                // por si acaso, activar ambos
                 habilitarCampo(bancoEmisor);
                 habilitarCampo(bancoReceptor);
             }

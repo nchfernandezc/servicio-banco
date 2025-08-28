@@ -1,72 +1,159 @@
+@php
+    $bancosVenezuela = [
+        '0102' => 'Banco de Venezuela',
+        '0104' => 'Venezolano de Crédito',
+        '0105' => 'Banco Mercantil',
+        '0108' => 'Banco Provincial',
+        '0114' => 'Bancaribe',
+        '0115' => 'Banco Exterior',
+        '0128' => 'Banco Caroní',
+        '0134' => 'Banesco',
+        '0137' => 'Banco Sofitasa',
+        '0138' => 'Banco Plaza',
+        '0146' => 'Banco de la Gente Emprendedora',
+        '0151' => 'BFC Banco Fondo Común',
+        '0156' => '100% Banco',
+        '0157' => 'DelSur',
+        '0163' => 'Banco del Tesoro',
+        '0166' => 'Banco Agrícola de Venezuela',
+        '0168' => 'Bancrecer',
+        '0169' => 'Mi Banco',
+        '0171' => 'Banco Activo',
+        '0172' => 'Bancamiga',
+        '0174' => 'Banplus',
+        '0175' => 'Bicentenario Banco',
+        '0177' => 'Banfanb',
+        '0191' => 'BNC Nacional de Crédito',
+        '0601' => 'Instituto Municipal de Crédito Popular',
+    ];
+    
+    if ($movimiento->tipo_movimiento === 'ingreso') {
+        $banco = $movimiento->bancoReceptor;
+        $bancoNombre = $banco->nombre ?? 'Banco no especificado';
+        $bancoCodigo = $banco->cuenta_banco ?? null;
+    } else {
+        $banco = $movimiento->bancoEmisor;
+        $bancoNombre = $banco->nombre ?? 'Banco no especificado';
+        $bancoCodigo = $banco->cuenta_banco ?? null;
+    }
+    
+    $bancoInfo = $bancoCodigo ? ($bancosVenezuela[$bancoCodigo] ?? $bancoNombre) : $bancoNombre;
+    
+    $symbol = match($banco->moneda ?? '') {
+        'dolares' => '$',
+        'euro' => '€',
+        default => 'Bs.'
+    };
+    
+    $fecha = \Carbon\Carbon::parse($movimiento->fecha)->format('d/m/Y');
+    
+    $tipoDisplay = [
+        'ingreso' => 'Ingreso',
+        'egreso' => 'Egreso',
+        'transferencia' => 'Transferencia'
+    ][$movimiento->tipo_movimiento] ?? ucfirst($movimiento->tipo_movimiento);
+    
+    $tipoColor = [
+        'ingreso' => 'text-green-600 bg-green-100 dark:bg-green-900 dark:text-green-100',
+        'egreso' => 'text-red-600 bg-red-100 dark:bg-red-900 dark:text-red-100',
+        'transferencia' => 'text-blue-600 bg-blue-100 dark:bg-blue-900 dark:text-blue-100'
+    ][$movimiento->tipo_movimiento] ?? 'bg-gray-100 dark:bg-gray-700';
+@endphp
+
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ $movimiento->name ?? __('Show') . " " . __('Movimiento') }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                Detalles del Movimiento
+            </h2>
+            <div class="flex space-x-2">
+                <a href="{{ route('movimientos.edit', $movimiento) }}" class="inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-600 focus:bg-yellow-600 active:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    {{ __('Editar') }}
+                </a>
+                <a href="{{ route('movimientos.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                    <x-letsicon-back class="w-4 h-4 mr-1" />
+                    {{ __('Volver') }}
+                </a>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="w-full">
-                    <div class="sm:flex sm:items-center">
-                        <div class="sm:flex-auto">
-                            <h1 class="text-base font-semibold leading-6 text-gray-900">{{ __('Show') }} Movimiento</h1>
-                            <p class="mt-2 text-sm text-gray-700">Details of {{ __('Movimiento') }}.</p>
+            <!-- Resumen del Movimiento -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                                Movimiento #{{ $movimiento->id }}
+                            </h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                Registrado el {{ $fecha }}
+                            </p>
                         </div>
-                        <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                            <a type="button" href="{{ route('movimientos.index') }}" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Back</a>
-                        </div>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $tipoColor }}">
+                            {{ $tipoDisplay }}
+                        </span>
                     </div>
 
-                    <div class="flow-root">
-                        <div class="mt-8 overflow-x-auto">
-                            <div class="inline-block min-w-full py-2 align-middle">
-                                <div class="mt-6 border-t border-gray-100">
-                                    <dl class="divide-y divide-gray-100">
-                                        
-                                <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                    <dt class="text-sm font-medium leading-6 text-gray-900">Tipo Movimiento</dt>
-                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ $movimiento->tipo_movimiento }}</dd>
-                                </div>
-                                <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                    <dt class="text-sm font-medium leading-6 text-gray-900">Monto</dt>
-                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ $movimiento->monto }}</dd>
-                                </div>
-                                @if ($movimiento->tipo_movimiento == 'ingreso')
-                                    
-                                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                        <dt class="text-sm font-medium leading-6 text-gray-900">Banco Receptor Id</dt>
-                                        <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ $movimiento->banco_receptor_id }}</dd>
-                                    </div>
-                                                 
-                                @elseif ($movimiento->tipo_movimiento == 'egreso') 
-                                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                        <dt class="text-sm font-medium leading-6 text-gray-900">Banco Emisor Id</dt>
-                                        <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ $movimiento->banco_emisor_id }}</dd>
-                                    </div>
-                                @else 
-                                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                        <dt class="text-sm font-medium leading-6 text-gray-900">Banco Receptor Id</dt>
-                                        <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ $movimiento->banco_receptor_id }}</dd>
-                                    </div>
-                                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                        <dt class="text-sm font-medium leading-6 text-gray-900">Banco Receptor Id</dt>
-                                        <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ $movimiento->banco_receptor_id }}</dd>
-                                    </div>
-                                @endif
-                                <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                    <dt class="text-sm font-medium leading-6 text-gray-900">Fecha</dt>
-                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ $movimiento->fecha }}</dd>
-                                </div>
-                                <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                    <dt class="text-sm font-medium leading-6 text-gray-900">Motivo</dt>
-                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ $movimiento->motivo }}</dd>
-                                </div>
+                    
+                    <div class="mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Monto -->
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Monto</p>
+                                <p class="mt-1 text-2xl font-semibold {{ $movimiento->tipo_movimiento === 'ingreso' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
+                                    {{ $movimiento->tipo_movimiento === 'ingreso' ? '+' : '-' }}{{ $symbol }} {{ number_format($movimiento->monto, 2, ',', '.') }}
+                                </p>
+                            </div>
 
-                                    </dl>
+                            <!-- Banco -->
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    {{ $movimiento->tipo_movimiento === 'ingreso' ? 'Banco Receptor' : 'Banco Emisor' }}
+                                </p>
+                                <div class="mt-1 flex items-center">
+                                    <div class="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-lg mr-3">
+                                        <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V8a2 2 0 00-2-2H6a2 2 0 00-2 2v9a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900 dark:text-white">{{ $bancoNombre }}</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $bancoInfo }}</p>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Detalles Adicionales -->
+                        <div class="mt-6 space-y-4">
+                            @if($movimiento->tipo_movimiento === 'transferencia')
+                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-700">
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Banco Destino</p>
+                                <p class="text-sm text-gray-900 dark:text-white">
+                                    {{ $movimiento->bancoReceptor->nombre ?? 'No especificado' }}
+                                </p>
+                            </div>
+                            @endif
+
+                            @if($movimiento->motivo)
+                            <div class="py-3 border-b border-gray-200 dark:border-gray-700">
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Motivo</p>
+                                <p class="text-gray-900 dark:text-white">{{ $movimiento->motivo }}</p>
+                            </div>
+                            @endif
+
+                            @if($movimiento->descripcion)
+                            <div class="py-3">
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Descripción</p>
+                                <p class="text-gray-900 dark:text-white">{{ $movimiento->descripcion }}</p>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>

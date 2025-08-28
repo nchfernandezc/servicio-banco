@@ -8,19 +8,6 @@
     <div class="py-12 max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
         <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
             <div class="w-full">
-
-                    @if (session('success'))
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                            <span class="block sm:inline">{{ session('success') }}</span>
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                            <span class="block sm:inline">{{ session('error') }}</span>
-                        </div>
-                    @endif
-                    
                 <div class="sm:flex sm:items-center justify-between">
                     <div class="sm:flex-auto">
                         <h1 class="text-base font-semibold leading-6 text-gray-900">{{ __('Movimientos') }}</h1>
@@ -38,7 +25,6 @@
                 </div>
 
                 <div class="py-12 bg-white shadow sm:rounded-lg p-8 max-w-full">
-                    <!-- Botones para seleccionar tabla -->
                     <div class="mb-6 flex space-x-4">
                         <button id="btn-ingresos" class="px-4 py-2 bg-indigo-600 text-white rounded font-semibold">Ingresos</button>
                         <button id="btn-egresos" class="px-4 py-2 bg-gray-300 text-gray-700 rounded font-semibold">Egresos</button>
@@ -71,18 +57,19 @@
                                         <td class="px-3 py-2 text-sm text-gray-500">{{ $movimiento->bancoReceptor->nombre }}</td>
                                         <td class="px-3 py-2 text-sm text-gray-500">{{ $movimiento->fecha }}</td>
                                         <td class="px-3 py-2 text-sm text-gray-500">{{ $movimiento->motivo }}</td>
-                                        <td class="px-3 py-2 text-sm font-medium text-gray-900">
-                                            <form action="{{ route('movimientos.destroy', $movimiento->id) }}" method="POST">
-                                                <a href="{{ route('movimientos.show', $movimiento->id) }}" class="text-gray-600 hover:text-gray-900 mr-2"><x-bx-show class="w-4 h-4 m-1 inline-block"/>Show</a>
-                                                <a href="{{ route('movimientos.edit', $movimiento->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-2"><x-feathericon-edit class="w-4 h-4 m-1 inline-block"/>Edit</a>
+                                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900">
+                                            <a href="{{ route('movimientos.show', $movimiento->id) }}" class="text-gray-600 font-bold hover:text-gray-900 mr-2">
+                                                <x-bx-show class="w-4 h-4 mr-1 inline-block"/> {{ __('Show') }}
+                                            </a>
+                                            <a href="{{ route('movimientos.edit', $movimiento->id) }}" class="text-indigo-600 font-bold hover:text-indigo-900 mr-2">
+                                                <x-feathericon-edit class="w-4 h-4 mr-1 inline-block"/> {{ __('Edit') }}
+                                            </a>
+                                            <form action="{{ route('movimientos.destroy', $movimiento->id) }}" method="POST" class="form-delete" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <a href="{{ route('movimientos.destroy', $movimiento->id) }}" 
-                                                   class="text-red-600 hover:text-red-900"
-                                                   onclick="event.preventDefault(); if(confirm('Are you sure to delete?')) this.closest('form').submit();">
-                                                   <x-monoicon-delete class="w-4 h-4 mr-1 inline-block"/>
-                                                   Delete
-                                                </a>
+                                                <button type="submit" class="text-red-600 font-bold hover:text-red-900 mr-2">
+                                                    <x-monoicon-delete class="w-4 h-4 mr-1 inline-block"/> {{ __('Delete') }}
+                                                </button>
                                             </form>
                                         </td>
                                     </tr>
@@ -120,17 +107,16 @@
                                         <td class="px-3 py-2 text-sm text-gray-500">{{ $movimiento->fecha }}</td>
                                         <td class="px-3 py-2 text-sm text-gray-500">{{ $movimiento->motivo }}</td>
                                         <td class="px-3 py-2 text-sm font-medium text-gray-900">
-                                            <form action="{{ route('movimientos.destroy', $movimiento->id) }}" method="POST">
-                                                <a href="{{ route('movimientos.show', $movimiento->id) }}" class="text-gray-600 hover:text-gray-900 mr-2"><x-bx-show class="w-4 h-4 m-1 inline-block"/>Show</a>
-                                                <a href="{{ route('movimientos.edit', $movimiento->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-2"><x-feathericon-edit class="w-4 h-4 m-1 inline-block"/>Edit</a>
+                                            <a href="{{ route('movimientos.show', $movimiento->id) }}" class="text-gray-600 hover:text-gray-900 mr-2"><x-bx-show class="w-4 h-4 m-1 inline-block"/>Show</a>
+                                            <a href="{{ route('movimientos.edit', $movimiento->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-2"><x-feathericon-edit class="w-4 h-4 m-1 inline-block"/>Edit</a>
+                                            @csrf
+                                            @method('DELETE')
+                                            <form action="{{ route('movimientos.destroy', $movimiento->id) }}" method="POST" class="form-delete" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <a href="{{ route('movimientos.destroy', $movimiento->id) }}" 
-                                                   class="text-red-600 hover:text-red-900"
-                                                   onclick="event.preventDefault(); if(confirm('Are you sure to delete?')) this.closest('form').submit();">
-                                                   <x-monoicon-delete class="w-4 h-4 m-1 inline-block"/>
-                                                   Delete
-                                                </a>
+                                                <button type="submit" class="text-red-600 font-bold hover:text-red-900 mr-2">
+                                                    <x-monoicon-delete class="w-4 h-4 mr-1 inline-block"/> {{ __('Delete') }}
+                                                </button>
                                             </form>
                                         </td>
                                     </tr>
@@ -149,7 +135,7 @@
                                 <thead>
                                     <tr>
                                         <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">No</th>
-                                        <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Tipo Movimiento</th>
+                                        <!--<th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Tipo Movimiento</th> !-->
                                         <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Monto</th>
                                         <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Banco Emisor</th>
                                         <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Banco Receptor</th>
@@ -163,24 +149,23 @@
                                 @foreach($transferencias as $movimiento)
                                     <tr class="even:bg-gray-50">
                                         <td class="px-3 py-2 text-sm font-semibold text-gray-900">{{ ++$i }}</td>
-                                        <td class="px-3 py-2 text-sm text-gray-500">{{ ucfirst($movimiento->tipo_movimiento) }}</td>
+                                        <!-- <td class="px-3 py-2 text-sm text-gray-500">{{ ucfirst($movimiento->tipo_movimiento) }}</td> !-->
                                         <td class="px-3 py-2 text-sm text-gray-500">{{ $movimiento->monto }}</td>
                                         <td class="px-3 py-2 text-sm text-gray-500">{{ $movimiento->bancoEmisor->nombre }}</td>
                                         <td class="px-3 py-2 text-sm text-gray-500">{{ $movimiento->bancoReceptor->nombre }}</td>
                                         <td class="px-3 py-2 text-sm text-gray-500">{{ $movimiento->fecha }}</td>
                                         <td class="px-3 py-2 text-sm text-gray-500">{{ $movimiento->motivo }}</td>
                                         <td class="px-3 py-2 text-sm font-medium text-gray-900">
-                                            <form action="{{ route('movimientos.destroy', $movimiento->id) }}" method="POST">
-                                                <a href="{{ route('movimientos.show', $movimiento->id) }}" class="text-gray-600 hover:text-gray-900 mr-2"><x-bx-show class="w-4 h-4 m-1 inline-block"/>Show</a>
-                                                <a href="{{ route('movimientos.edit', $movimiento->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-2"><x-feathericon-edit class="w-4 h-4 m-1 inline-block"/>Edit</a>
+                                            <a href="{{ route('movimientos.show', $movimiento->id) }}" class="text-gray-600 hover:text-gray-900 mr-2"><x-bx-show class="w-4 h-4 m-1 inline-block"/>Show</a>
+                                            <a href="{{ route('movimientos.edit', $movimiento->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-2"><x-feathericon-edit class="w-4 h-4 m-1 inline-block"/>Edit</a>
+                                            @csrf
+                                            @method('DELETE')
+                                            <form action="{{ route('movimientos.destroy', $movimiento->id) }}" method="POST" class="form-delete" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <a href="{{ route('movimientos.destroy', $movimiento->id) }}" 
-                                                   class="text-red-600 hover:text-red-900"
-                                                   onclick="event.preventDefault(); if(confirm('Are you sure to delete?')) this.closest('form').submit();">
-                                                   <x-monoicon-delete class="w-4 h-4 m-1 inline-block"/>
-                                                   Delete
-                                                </a>
+                                                <button type="submit" class="text-red-600 font-bold hover:text-red-900 mr-2">
+                                                    <x-monoicon-delete class="w-4 h-4 mr-1 inline-block"/> {{ __('Delete') }}
+                                                </button>
                                             </form>
                                         </td>
                                     </tr>
@@ -190,11 +175,10 @@
                         </div>
                         <div class="mt-4">{{ $transferencias->links() }}</div>
                     </div>
-                </div> <!-- end py-12 -->
-
-            </div> <!-- end w-full -->
-        </div> <!-- end p-4 sm:p-8 -->
-    </div> <!-- end py-12 max-w-full -->
+                </div>
+            </div>
+        </div> 
+    </div> 
 
     <script>
         const btnIngresos = document.getElementById('btn-ingresos');

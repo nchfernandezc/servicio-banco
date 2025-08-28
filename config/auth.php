@@ -19,6 +19,15 @@ return [
     ],
 
     /*
+        Se agrega la configuracion de la configuracion del guardia api con sanctum 
+    */
+
+    'api' => [
+        'driver' => 'sanctum',
+        'provider' => 'users',
+    ],
+
+    /*
     |--------------------------------------------------------------------------
     | Authentication Guards
     |--------------------------------------------------------------------------

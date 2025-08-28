@@ -55,6 +55,4 @@ class ServicioBanco implements InterfazServicioBanco
 
         return $json;
     }
-
-
 }

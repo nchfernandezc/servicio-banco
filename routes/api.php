@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+/*
 Route::get('/banco/{banco_id}/balance', function ($banco_id) {
     $saldos = [
         '12345' => 1500.75,
@@ -17,4 +18,6 @@ Route::get('/banco/{banco_id}/balance', function ($banco_id) {
         'moneda' => 'bolivares'
     ]);
 });
+*/
+
 

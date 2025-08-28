@@ -30,7 +30,7 @@ class Banco extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['nombre', 'tipo_cuenta', 'numero_cuenta', 'moneda'];
+    protected $fillable = ['nombre', 'tipo_cuenta', 'numero_cuenta', 'moneda', 'cuenta_banco'];
 
     public function balances()
     {
@@ -51,7 +51,10 @@ class Banco extends Model
 
     public function movimientos()
     {
-        return $this->hasMany(Movimiento::class);
+        return Movimiento::where(function($query) {
+            $query->where('banco_emisor_id', $this->id)
+                  ->orWhere('banco_receptor_id', $this->id);
+        });
     }
 
     public function obtenerBalanceBanco()

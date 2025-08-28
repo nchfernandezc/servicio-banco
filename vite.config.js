@@ -8,4 +8,19 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        hmr: {
+            host: 'localhost',
+        },
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['alpinejs'],
+                    utils: ['toastr', 'sweetalert2']
+                }
+            }
+        }
+    }
 });

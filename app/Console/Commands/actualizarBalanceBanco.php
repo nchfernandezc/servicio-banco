@@ -24,6 +24,10 @@ class actualizarBalanceBanco extends Command
     /**
      * Execute the console command.
      */
+
+    /*
+        Comando para ejecutar servicio de banco y actualizar los balances de las cuentas agregadas
+    */
     public function handle()
     {
         $bancos = Banco::all();

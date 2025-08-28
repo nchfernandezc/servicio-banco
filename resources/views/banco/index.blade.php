@@ -9,19 +9,6 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <div class="w-full">
-                    
-                    @if (session('success'))
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                            <span class="block sm:inline">{{ session('success') }}</span>
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                            <span class="block sm:inline">{{ session('error') }}</span>
-                        </div>
-                    @endif
-
                     <div class="sm:flex sm:items-center">
                         <div class="sm:flex-auto">
                             <h1 class="text-base font-semibold leading-6 text-gray-900">{{ __('Listado de Bancos') }}</h1>
@@ -53,30 +40,30 @@
                                         <tr class="even:bg-gray-50">
                                             <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-900">{{ ++$i }}</td>
                                             
-										<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ $banco->nombre }}</td>
-										<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ ucfirst($banco->tipo_cuenta) }}</td>
-										<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ $banco->numero_cuenta }}</td>
-										<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ ucfirst($banco->moneda) }}</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ $banco->nombre }}</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ ucfirst($banco->tipo_cuenta) }}</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ $banco->numero_cuenta }}</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ ucfirst($banco->moneda) }}</td>
 
                                             <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900">
-                                                <form action="{{ route('bancos.destroy', $banco->id) }}" method="POST">
-                                                    <a href="{{ route('bancos.show', $banco->id) }}" class="text-gray-600 font-bold hover:text-gray-900 mr-2"><x-bx-show class="w-4 h-4 mr-1 inline-block"/>{{ __('Show') }}</a>
-                                                    <a href="{{ route('bancos.edit', $banco->id) }}" class="text-indigo-600 font-bold hover:text-indigo-900  mr-2"><x-feathericon-edit class="w-4 h-4 mr-1 inline-block"/>{{ __('Edit') }}</a>
+                                                <a href="{{ route('bancos.show', $banco->id) }}" class="text-gray-600 font-bold hover:text-gray-900 mr-2">
+                                                    <x-bx-show class="w-4 h-4 mr-1 inline-block"/> {{ __('Show') }}
+                                                </a>
+                                                <a href="{{ route('bancos.edit', $banco->id) }}" class="text-indigo-600 font-bold hover:text-indigo-900 mr-2">
+                                                    <x-feathericon-edit class="w-4 h-4 mr-1 inline-block"/> {{ __('Edit') }}
+                                                </a>
+                                                <form action="{{ route('bancos.destroy', $banco->id) }}" method="POST" class="form-delete" style="display:inline;">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <a href="{{ route('bancos.destroy', $banco->id) }}" 
-                                                        class="text-red-600 font-bold hover:text-red-900 mr-2" 
-                                                        onclick="event.preventDefault(); confirm('Are you sure to delete?') ? this.closest('form').submit() : false;">
-                                                        <x-monoicon-delete class="w-4 h-4 mr-1 inline-block"/>
-                                                        {{ __('Delete') }}
-                                                    </a>
+                                                    <button type="submit" class="text-red-600 font-bold hover:text-red-900 mr-2">
+                                                        <x-monoicon-delete class="w-4 h-4 mr-1 inline-block"/> {{ __('Delete') }}
+                                                    </button>
                                                 </form>
                                             </td>
                                         </tr>
                                     @endforeach
                                     </tbody>
                                 </table>
-
                                 <div class="mt-4 px-4">
                                     {!! $bancos->withQueryString()->links() !!}
                                 </div>

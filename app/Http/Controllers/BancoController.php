@@ -39,7 +39,7 @@ class BancoController extends Controller
     {
         //Banco::create($request->validated());
 
-        $banco = Banco::create($request->all());
+        $banco = Banco::create($request->validated());
         $balance = $banco->actualizarBalanceBanco();
 
         return Redirect::route('bancos.index')
@@ -71,10 +71,18 @@ class BancoController extends Controller
      */
     public function update(BancoRequest $request, Banco $banco): RedirectResponse
     {
-        $banco->update($request->validated());
+        $data = $request->validated();
+        
+        $banco->update([
+            'nombre' => $data['nombre'],
+            'tipo_cuenta' => $data['tipo_cuenta'],
+            'numero_cuenta' => $data['numero_cuenta'],
+            'moneda' => $data['moneda'],
+            'cuenta_banco' => $data['cuenta_banco']
+        ]);
 
         return Redirect::route('bancos.index')
-            ->with('success', 'Banco updated successfully');
+            ->with('success', 'Banco actualizado exitosamente');
     }
 
     public function destroy($id): RedirectResponse

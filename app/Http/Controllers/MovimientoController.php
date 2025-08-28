@@ -99,7 +99,7 @@ class MovimientoController extends Controller
         }
 
         DB::transaction(function() use ($request) {
-            // Guardar movimiento
+            // Guardar movimiento con el usuario autenticado
             $movimiento = Movimiento::create([
                 'tipo_movimiento' => $request->tipo_movimiento,
                 'monto' => $request->monto,
@@ -107,6 +107,7 @@ class MovimientoController extends Controller
                 'banco_receptor_id' => $request->banco_receptor_id,
                 'fecha' => $request->fecha,
                 'motivo' => $request->motivo,
+                'user_id' => auth()->id(),
             ]);
 
             $movimiento->load(['bancoEmisor.latestBalance', 'bancoReceptor.latestBalance']);
@@ -212,46 +213,5 @@ class MovimientoController extends Controller
 
         return Redirect::route('movimientos.index')
             ->with('success', 'Movimiento creado Satisfactoriamente');
-    }
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show($id): View
-    {
-        $movimiento = Movimiento::find($id);
-
-        return view('movimiento.show', compact('movimiento'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id): View
-    {
-        $movimiento = Movimiento::find($id);
-        $bancos = Banco::all();
-
-        return view('movimiento.edit', compact('movimiento', 'bancos'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(MovimientoRequest $request, Movimiento $movimiento): RedirectResponse
-    {
-        $movimiento->update($request->validated());
-
-        return Redirect::route('movimientos.index')
-            ->with('success', 'Movimiento updated successfully');
-    }
-
-    public function destroy($id): RedirectResponse
-    {
-        Movimiento::find($id)->delete();
-
-        return Redirect::route('movimientos.index')
-            ->with('success', 'Movimiento deleted successfully');
     }
 }

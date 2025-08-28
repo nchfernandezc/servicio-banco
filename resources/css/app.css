@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#audit-table_wrapper {
+    max-width: 100%;
+    overflow-x: visible !important;
+}
+
+#audit-table {
+    width: 100% !important;
+    table-layout: fixed;  
+    word-wrap: break-word;
+}
+
+#audit-table th, #audit-table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dataTables_scrollBody
+{
+    width: 90%;
+}
