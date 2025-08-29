@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
     <head>
-        <link rel="preload" as="style" href="http://127.0.0.1:8000/vendor/milenmk/laravel-simple-datatables-and-forms/css/package.css" onload="this.onload=null;this.rel='stylesheet'" crossorigin><noscript><link rel="stylesheet" href="http://127.0.0.1:8000/vendor/milenmk/laravel-simple-datatables-and-forms/css/package.css"></noscript>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
@@ -14,7 +13,9 @@
 
         <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css"/>
         <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-
+        <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.css">
+        <link rel="stylesheet" href="<../../assets/template/datatables.net-bs/css/responsive.dataTables.min.css">
+                
         <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     </head>
     <body class="font-sans antialiased">
@@ -42,9 +43,9 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+        <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-
+        <script src="<../../assets/template/datatables.net/js/dataTables.responsive.min.js"></script>
 
         <script>
             <?php if(session('success')): ?>

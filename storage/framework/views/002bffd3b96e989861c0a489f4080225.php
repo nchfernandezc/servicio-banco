@@ -27,7 +27,6 @@
         '0601' => 'Instituto Municipal de Crédito Popular',
     ];
     
-    // Get bank information based on movement type
     if ($movimiento->tipo_movimiento === 'ingreso') {
         $banco = $movimiento->bancoReceptor;
         $bancoNombre = $banco->nombre ?? 'Banco no especificado';
@@ -40,17 +39,14 @@
     
     $bancoInfo = $bancoCodigo ? ($bancosVenezuela[$bancoCodigo] ?? $bancoNombre) : $bancoNombre;
     
-    // Get currency symbol
     $symbol = match($banco->moneda ?? '') {
         'dolares' => '$',
         'euro' => '€',
         default => 'Bs.'
     };
     
-    // Format date
     $fecha = \Carbon\Carbon::parse($movimiento->fecha)->format('d/m/Y');
     
-    // Movement type display
     $tipoDisplay = [
         'ingreso' => 'Ingreso',
         'egreso' => 'Egreso',

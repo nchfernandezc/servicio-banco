@@ -74,11 +74,9 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <!-- Información del Balance -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <div class="w-full">
-                        <!-- Datos del Banco -->
                         <div class="space-y-4 max-w-3xl mx-auto">
                             <div class="flex items-center space-x-4">
                                 <div class="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-lg">

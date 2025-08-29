@@ -85,6 +85,54 @@ class Banco extends Model
 
     public function actualizarBalanceBanco()
     {
+        // Usar el campo correcto para la cuenta
+        $numeroCuenta = $this->numero_cuenta;
+
+        if (empty($numeroCuenta) || strlen($numeroCuenta) < 4) {
+            return null;
+        }
+
+        $codigo_banco = substr($numeroCuenta, 0, 4);
+
+        $servicioBanco = app(InterfazServicioBanco::class);
+        Log::info("actualizarBalanceBanco: procesarMovimientos para codigo {$codigo_banco}");
+        try {
+            $servicioBanco->procesarMovimientos($codigo_banco);
+        } catch (\Throwable $e) {
+            Log::error('actualizarBalanceBanco: error en procesarMovimientos: ' . $e->getMessage());
+        }
+
+        Log::info("actualizarBalanceBanco: obtenerBalance para cuenta {$numeroCuenta}");
+        try {
+            $balanceActualizado = $servicioBanco->obtenerBalance($codigo_banco, $numeroCuenta);
+        } catch (\Throwable $e) {
+            Log::error('actualizarBalanceBanco: error en obtenerBalance: ' . $e->getMessage());
+            $balanceActualizado = null;
+        }
+
+        if ($balanceActualizado !== null) {
+            // Buscar el último balance relacionado
+            $ultimo = $this->latestBalance()->first();
+            if ($ultimo) {
+                $ultimo->update([
+                    'monto_actual' => $balanceActualizado,
+                    'ult_modificacion' => now(),
+                ]);
+            } else {
+                Balance::create([
+                    'banco_id' => $this->id,
+                    'monto_actual' => $balanceActualizado,
+                    'ult_modificacion' => now(),
+                ]);
+            }
+        }
+
+        return $balanceActualizado;
+    }
+
+    /*
+    public function actualizarBalanceBanco()
+    {
         Log::info('Iniciando actualizarBalanceBanco');
 
         $balance = $this->obtenerBalanceBanco();
@@ -109,4 +157,6 @@ class Banco extends Model
 
         return $balance;
     }
+    */
+
 }

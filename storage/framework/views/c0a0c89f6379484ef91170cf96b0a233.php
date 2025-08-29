@@ -399,7 +399,6 @@ unset($__errorArgs, $__bag); ?>" id="banco_receptor_id" style="height: 38px !imp
                 habilitarCampo(bancoEmisor);
                 habilitarCampo(bancoReceptor);
             } else {
-                // por si acaso, activar ambos
                 habilitarCampo(bancoEmisor);
                 habilitarCampo(bancoReceptor);
             }

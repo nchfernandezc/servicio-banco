@@ -97,7 +97,8 @@
                     <!-- muestra si existen resultados -->
                     <?php if(isset($auditorias) && $auditorias->count() > 0): ?>
                     <div class="mt-8 overflow-x-auto">
-                    <table id="audit-table" class="w-full text-sm text-left text-black bg-red-300">
+                        <div class="table-responsive">
+                            <table id="audit-table" class="w-full text-sm text-left text-black bg-red-300" cellspacing="0" width="90%">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
@@ -150,7 +151,7 @@
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </tbody>
                             </table>
-
+                        </div>    
                             <div class="mt-4">
                                 <?php echo e($auditorias->appends(request()->except('page'))->links()); ?>
 
@@ -166,7 +167,20 @@
             </div>
         </div>
     </div>
-  
+    <?php $__env->startPush('scripts'); ?>
+    <script>
+        $(document).ready(function() {
+            $('#audit-table').DataTable({
+                pageLength: 50,
+                responsive: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+                },
+                dom: 'Bfrtip',
+            });
+        });
+    </script>
+    <?php $__env->stopPush(); ?>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>

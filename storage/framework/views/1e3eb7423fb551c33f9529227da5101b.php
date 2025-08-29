@@ -503,7 +503,7 @@
                                 ticks: {
                                     callback: function(value) {
                                         const symbol = banksData[0]?.simbolo || '';
-                                        return `${symbol}${value.toLocaleString()}`;
+                                        return `${value.toLocaleString()}`;
                                     }
                                 }
                             },
@@ -530,7 +530,7 @@
     <script>
         
         document.addEventListener('DOMContentLoaded', function() {
-            // --- Modal: Nueva Transacción ---
+            // --- Crear transaccion con modal ---
             const modalMov = document.getElementById('modal-mov');
             const btnOpenMov = document.getElementById('btn-open-modal-mov');
             const btnCloseMov = document.getElementById('btn-close-modal-mov');
@@ -568,7 +568,7 @@
                 toggleBankFields();
             }
 
-            // --- Modal: Reporte ---
+            // --- Comsultar y generar reporte con el modal ---
             const modalRep = document.getElementById('modal-reporte');
             const btnOpenRep = document.getElementById('btn-open-modal-reporte');
             const btnCloseRep = document.getElementById('btn-close-modal-reporte');

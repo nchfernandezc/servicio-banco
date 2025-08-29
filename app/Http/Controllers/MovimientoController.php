@@ -53,6 +53,16 @@ class MovimientoController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show($id): View
+    {
+        $movimiento = Movimiento::find($id);
+
+        return view('movimiento.show', compact('movimiento'));
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)

@@ -38,23 +38,82 @@ class DashboardController extends Controller
         $previousBanks = Banco::where('created_at', '<', now()->subMonth())->count();
         $banksChange = $previousBanks > 0 ? round((($totalBanks - $previousBanks) / $previousBanks) * 100) : ($totalBanks > 0 ? 100 : 0);
 
-        // Transacciones de los ultimos 6 meses 
-        $transactionsByMonth = Movimiento::select(
-                DB::raw('DATE_FORMAT(created_at, "%b %Y") as month'),
-                DB::raw('count(*) as total')
+        // Transacciones de los últimos 6 meses (orden correcto y meses sin datos = 0)
+        $desde = now()->startOfMonth()->subMonths(5); // incluye el mes actual y 5 anteriores
+        $raw = Movimiento::select(
+                DB::raw('YEAR(created_at) as y'),
+                DB::raw('MONTH(created_at) as m'),
+                DB::raw('COUNT(*) as total')
             )
-            ->where('created_at', '>=', now()->subMonths(6))
-            ->groupBy('month')
-            ->orderBy('month')
+            ->where('created_at', '>=', $desde)
+            ->groupBy('y', 'm')
+            ->orderBy('y')
+            ->orderBy('m')
             ->get();
 
-        foreach ($transactionsByMonth as $transaction) {
-            $transactionsData['labels'][] = $transaction->month;
-            $transactionsData['data'][] = $transaction->total;
+        // Mapa "YYYY-MM" => total
+        $mapYM = [];
+        foreach ($raw as $r) {
+            $key = sprintf('%04d-%02d', $r->y, $r->m);
+            $mapYM[$key] = (int)$r->total;
+        }
+
+        // Construir las series garantizando 6 puntos
+        $transactionsData = [
+            'labels' => [],
+            'data' => [],
+        ];
+        for ($i = 0; $i < 6; $i++) {
+            $dt = (clone $desde)->addMonths($i);
+            $key = $dt->format('Y-m');
+            $transactionsData['labels'][] = $dt->format('M Y');
+            $transactionsData['data'][] = $mapYM[$key] ?? 0;
         }
 
         // Se obtiene el balance de cada banco 
         $bancos = Banco::with('latestBalance')->get();
+        
+        // Mapa explícito de códigos de bancos de Venezuela a nombres
+        $bancosVenezuela = [
+            '0102' => 'Banco de Venezuela',
+            '0104' => 'Venezolano de Crédito',
+            '0105' => 'Banco Mercantil',
+            '0108' => 'Banco Provincial',
+            '0114' => 'Bancaribe',
+            '0115' => 'Banco Exterior',
+            '0128' => 'Banco Caroní',
+            '0134' => 'Banesco',
+            '0137' => 'Banco Sofitasa',
+            '0138' => 'Banco Plaza',
+            '0146' => 'Banco de la Gente Emprendedora',
+            '0151' => 'BFC Banco Fondo Común',
+            '0156' => '100% Banco',
+            '0157' => 'DelSur',
+            '0163' => 'Banco del Tesoro',
+            '0166' => 'Banco Agrícola de Venezuela',
+            '0168' => 'Bancrecer',
+            '0169' => 'Mi Banco',
+            '0171' => 'Banco Activo',
+            '0172' => 'Bancamiga',
+            '0174' => 'Banplus',
+            '0175' => 'Bicentenario Banco',
+            '0177' => 'Banfanb',
+            '0191' => 'BNC Nacional de Crédito',
+            '0601' => 'Instituto Municipal de Crédito Popular',
+        ];
+        
+        // Construir un mapa codigo_banco (primeros 4 dígitos de numero_cuenta) => nombre (fallback)
+        $codeToName = [];
+        foreach ($bancos as $b) {
+            $num = (string)($b->numero_cuenta ?? '');
+            if (strlen($num) >= 4) {
+                $code = substr($num, 0, 4);
+                // Solo setear si no existe para mantener el primer nombre encontrado
+                if (!isset($codeToName[$code])) {
+                    $codeToName[$code] = $b->nombre ?? $code;
+                }
+            }
+        }
         $usersData = [
             'labels' => [],
             'data' => []
@@ -63,7 +122,7 @@ class DashboardController extends Controller
         $banksData = [];
         
         foreach ($bancos as $banco) {
-            $usersData['labels'][] = $banco->nombre;
+            $usersData['labels'][] = $banco->cuenta_banco;
             $balance = $banco->latestBalance ? (float)$banco->latestBalance->monto_actual : 0;
             $usersData['data'][] = $balance;
             
@@ -73,8 +132,14 @@ class DashboardController extends Controller
                 $symbol = $banco->moneda === 'dolares' ? '$' : 'Bs.';
             }
             
+            // Traducir el código almacenado en cuenta_banco a nombre legible usando el mapa explícito y luego fallback
+            $codigo = (string)($banco->cuenta_banco);
+            $labelNombre = $bancosVenezuela[$codigo] 
+                ?? $codeToName[$codigo] 
+                ?? ($banco->nombre ?? $codigo);
+            
             $banksData[] = [
-                'nombre' => $banco->nombre,
+                'nombre' => $labelNombre,
                 'saldo' => $balance,
                 'moneda' => $banco->moneda ?? 'bolivares',
                 'simbolo' => $symbol
